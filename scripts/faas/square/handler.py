@@ -5,10 +5,8 @@ Formula: area = side * side
 """
 
 import json
-import sys
 
-
-def handle(req, context):
+def handle(event, context):
     """
     Handle the FaaS request to calculate square surface area.
     
@@ -19,43 +17,51 @@ def handle(req, context):
     
     Returns JSON:
     {
-        "surface_area": float,
-        "unit": "square units"
+        "statusCode": int,
+        "body": str
     }
     """
     try:
-        # Parse input JSON
-        data = json.loads(req)
+        req_data = json.loads(event.body.decode('utf8'))
         
         # Validate input
-        if "side" not in data:
+        if "side" not in req_data:
             return {
-                "error": "Missing required parameter: side"
+                "statusCode": 400,
+                "body": "Missing required parameter: side"
             }
         
-        side = float(data["side"])
+        side = float(req_data["side"])
         
         # Validate side length
         if side <= 0:
             return {
-                "error": "Side length must be positive"
+                "statusCode": 400,
+                "body": "Side length must be positive"
             }
         
         # Calculate surface area
         surface_area = side * side
         
         # Return result
-        return {
+        result = {
             "surface_area": surface_area,
             "side": side,
             "unit": "square units"
         }
         
+        return {
+            "statusCode": 200,
+            "body": json.dumps(result)
+        }
+        
     except ValueError as e:
         return {
-            "error": f"Invalid input: {str(e)}"
+            "statusCode": 400,
+            "body": f"Invalid input: {str(e)}"
         }
     except Exception as e:
         return {
-            "error": f"Unexpected error: {str(e)}"
+            "statusCode": 500,
+            "body": f"Internal Error: {str(e)}"
         }
