@@ -8,7 +8,7 @@ import json
 import sys
 
 
-def handle(req):
+def handle(req, context):
     """
     Handle the FaaS request to calculate square surface area.
     
@@ -29,40 +29,33 @@ def handle(req):
         
         # Validate input
         if "side" not in data:
-            return json.dumps({
+            return {
                 "error": "Missing required parameter: side"
-            })
+            }
         
         side = float(data["side"])
         
         # Validate side length
         if side <= 0:
-            return json.dumps({
+            return {
                 "error": "Side length must be positive"
-            })
+            }
         
         # Calculate surface area
         surface_area = side * side
         
         # Return result
-        return json.dumps({
+        return {
             "surface_area": surface_area,
             "side": side,
             "unit": "square units"
-        })
+        }
         
     except ValueError as e:
-        return json.dumps({
+        return {
             "error": f"Invalid input: {str(e)}"
-        })
+        }
     except Exception as e:
-        return json.dumps({
+        return {
             "error": f"Unexpected error: {str(e)}"
-        })
-
-
-if __name__ == "__main__":
-    # Read from stdin (FaaS standard)
-    req = sys.stdin.read()
-    result = handle(req)
-    print(result)
+        }
