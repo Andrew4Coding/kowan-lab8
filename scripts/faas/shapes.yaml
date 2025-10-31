@@ -1,0 +1,28 @@
+version: 1.0
+provider:
+  name: openfaas
+  gateway: http://127.0.0.1:31133
+functions:
+  # --- Fungsi 1: Circle ---
+  circle:
+    lang: python3-http
+    handler: ./kowan-lab8/scripts/faas/circle
+    image: andrew4coding/of-circle:latest 
+
+  # --- Fungsi 2: Cube ---
+  cube:
+    lang: python3-http
+    handler: ./kowan-lab8/scripts/faas/cube
+    image: andrew4coding/of-cube:latest
+
+  # --- Fungsi 3: Square ---
+  square:
+    lang: python3-http
+    handler: ./kowan-lab8/scripts/faas/square
+    image: andrew4coding/of-square:latest  
+
+  # --- Fungsi 4: Tube ---
+  tube:
+    lang: python3-http
+    handler: ./kowan-lab8/scripts/faas/tube
+    image: andrew4coding/of-tube:latest
