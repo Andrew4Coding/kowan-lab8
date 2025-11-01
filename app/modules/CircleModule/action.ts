@@ -4,15 +4,14 @@ export async function CircleAction({ request }: ActionFunctionArgs) {
   const formData = await request.formData();
   const radius = formData.get('radius');
 
-  // Simulate API call to backend
-  const response = await fetch('https://jsonplaceholder.typicode.com/posts', {
+  // Call AWS API
+  const response = await fetch('https://t7ow9idud3.execute-api.us-east-1.amazonaws.com/circle-surface/calculate', {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',
     },
     body: JSON.stringify({
-      radius,
-      formula: 'π * radius * radius',
+      radius: Number(radius),
     }),
   });
 
@@ -20,9 +19,8 @@ export async function CircleAction({ request }: ActionFunctionArgs) {
     return { success: false, error: 'Failed to calculate' };
   }
 
-  // Calculate area (π * r^2)
-  const area = Math.PI * Number(radius) * Number(radius);
+  const data = await response.json();
 
-  return { success: true, result: parseFloat(area.toFixed(2)) };
+  return { success: true, result: data.surface_area };
 }
 

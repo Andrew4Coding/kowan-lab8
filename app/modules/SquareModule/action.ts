@@ -4,15 +4,14 @@ export async function SquareAction({ request }: ActionFunctionArgs) {
   const formData = await request.formData();
   const side = formData.get('side');
 
-  // Simulate API call to backend
-  const response = await fetch('https://jsonplaceholder.typicode.com/posts', {
+  // Call AWS API
+  const response = await fetch('https://t7ow9idud3.execute-api.us-east-1.amazonaws.com/square-surface/calculate', {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',
     },
     body: JSON.stringify({
-      side,
-      formula: 'side * side',
+      side: Number(side),
     }),
   });
 
@@ -20,9 +19,8 @@ export async function SquareAction({ request }: ActionFunctionArgs) {
     return { success: false, error: 'Failed to calculate' };
   }
 
-  // Calculate area
-  const area = Number(side) * Number(side);
+  const data = await response.json();
 
-  return { success: true, result: area };
+  return { success: true, result: data.surface_area };
 }
 

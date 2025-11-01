@@ -5,16 +5,15 @@ export async function TubeAction({ request }: ActionFunctionArgs) {
   const radius = formData.get('radius');
   const height = formData.get('height');
 
-  // Simulate API call to backend
-  const response = await fetch('https://jsonplaceholder.typicode.com/posts', {
+  // Call AWS API
+  const response = await fetch('https://t7ow9idud3.execute-api.us-east-1.amazonaws.com/tube-cylinder-surface/calculate', {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',
     },
     body: JSON.stringify({
-      radius,
-      height,
-      formula: '2 * π * radius * (radius + height)',
+      jari_jari: Number(radius),
+      tinggi: Number(height),
     }),
   });
 
@@ -22,9 +21,8 @@ export async function TubeAction({ request }: ActionFunctionArgs) {
     return { success: false, error: 'Failed to calculate' };
   }
 
-  // Calculate surface area (2πr(r + h))
-  const surfaceArea = 2 * Math.PI * Number(radius) * (Number(radius) + Number(height));
+  const data = await response.json();
 
-  return { success: true, result: parseFloat(surfaceArea.toFixed(2)) };
+  return { success: true, result: data.luas_selimut };
 }
 
