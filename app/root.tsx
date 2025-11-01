@@ -18,8 +18,8 @@ import { ENV } from './lib/env';
 
 export function meta({ }: Route.MetaArgs) {
   return [
-    { title: 'lab7' },
-    { name: 'lab7', content: 'Welcome to lab7!' },
+    { title: 'lab8' },
+    { name: 'lab8', content: 'Welcome to lab8!' },
   ];
 }
 
