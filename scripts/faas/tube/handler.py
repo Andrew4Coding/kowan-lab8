@@ -27,7 +27,6 @@ def handle(event, context):
     try:
         req_data = json.loads(event.body.decode('utf8'))
         
-        # Validate input
         if "radius" not in req_data:
             return {
                 "statusCode": 400,
@@ -42,8 +41,7 @@ def handle(event, context):
         
         radius = float(req_data["radius"])
         height = float(req_data["height"])
-        
-        # Validate dimensions
+
         if radius <= 0:
             return {
                 "statusCode": 400,
@@ -56,12 +54,8 @@ def handle(event, context):
                 "body": "Height must be positive"
             }
         
-        # Calculate surface area
-        # Surface area = 2πr² (top and bottom circles) + 2πrh (curved surface)
-        # = 2πr(r + h)
-        surface_area = 2 * math.pi * radius * (radius + height)
+        surface_area = 2 * math.pi * radius * height
         
-        # Return result
         result = {
             "surface_area": surface_area,
             "radius": radius,

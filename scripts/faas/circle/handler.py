@@ -8,24 +8,9 @@ import json
 import math
 
 def handle(event, context):
-    """
-    Handle the FaaS request to calculate circle surface area.
-    
-    Expected input JSON:
-    {
-        "radius": float
-    }
-    
-    Returns JSON:
-    {
-        "statusCode": int,
-        "body": str
-    }
-    """
     try:
         req_data = json.loads(event.body.decode('utf8'))
-        
-        # Validate input
+    
         if "radius" not in req_data:
             return {
                 "statusCode": 400,
@@ -34,17 +19,14 @@ def handle(event, context):
         
         radius = float(req_data["radius"])
         
-        # Validate radius
         if radius <= 0:
             return {
                 "statusCode": 400,
                 "body": "Radius must be positive"
             }
         
-        # Calculate surface area
         surface_area = math.pi * (radius ** 2)
         
-        # Return result
         result = {
             "surface_area": surface_area,
             "radius": radius,
