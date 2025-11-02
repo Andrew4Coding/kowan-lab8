@@ -1,16 +1,10 @@
-#!/usr/bin/env python3
-"""
-FaaS function to calculate the surface area of a circle.
-Formula: area = π * radius^2
-"""
-
 import json
 import math
 
-def handle(event, context):
+def lambda_handler(event, context):
     try:
-        req_data = json.loads(event.body.decode('utf8'))
-    
+        req_data = json.loads(event['body'])
+        
         if "radius" not in req_data:
             return {
                 "statusCode": 400,
@@ -48,4 +42,3 @@ def handle(event, context):
             "statusCode": 500,
             "body": f"Internal Error: {str(e)}"
         }
-

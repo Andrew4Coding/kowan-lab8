@@ -1,67 +1,84 @@
-#!/usr/bin/env python3
-"""
-FaaS function to calculate the surface area of a cube.
-Formula: surface_area = 6 * side^2
-"""
-
 import json
+import urllib3
 
-def handle(event, context):
-    """
-    Handle the FaaS request to calculate cube surface area.
-    
-    Expected input JSON:
-    {
-        "side": float
-    }
-    
-    Returns JSON:
-    {
-        "statusCode": int,
-        "body": str
-    }
-    """
+LUAS_PERSEGI_URL = "https://t7ow9idud3.execute-api.us-east-1.amazonaws.com/square-surface/calculate"
+
+http = urllib3.PoolManager()
+
+def lambda_handler(event, context):
     try:
-        req_data = json.loads(event.body.decode('utf8'))
+        body = json.loads(event.get('body', '{}'))
+        rusuk = float(body.get('rusuk', 0))
         
-        # Validate input
-        if "side" not in req_data:
+        if rusuk <= 0:
             return {
-                "statusCode": 400,
-                "body": "Missing required parameter: side"
+                'statusCode': 400,
+                'headers': {
+                    'Access-Control-Allow-Origin': '*',
+                    'Access-Control-Allow-Headers': 'Content-Type',
+                    'Access-Control-Allow-Methods': 'GET,POST,OPTIONS'
+                },
+                'body': json.dumps({'error': 'Rusuk harus lebih besar dari 0'})
             }
         
-        side = float(req_data["side"])
+        payload = {'side': rusuk}
+        encoded_payload = json.dumps(payload).encode('utf-8')
         
-        # Validate side length
-        if side <= 0:
+        response = http.request(
+            'POST',
+            LUAS_PERSEGI_URL,
+            body=encoded_payload,
+            headers={'Content-Type': 'application/json'}
+        )
+        
+        if response.status != 200:
             return {
-                "statusCode": 400,
-                "body": "Side length must be positive"
+                'statusCode': 500,
+                'headers': {
+                    'Access-Control-Allow-Origin': '*'
+                },
+                'body': json.dumps({
+                    'error': f'Error calling square function, status: {response.status}',
+                    'details': response.data.decode('utf-8')
+                })
             }
         
-        # Calculate surface area (6 faces, each with area = side^2)
-        surface_area = 6 * (side ** 2)
+        response_data = json.loads(response.data.decode('utf-8'))
         
-        # Return result
-        result = {
-            "surface_area": surface_area,
-            "side": side,
-            "unit": "square units"
-        }
+        luas_sisi = response_data.get('surface_area', 0)
+        
+        luas_permukaan = 6 * luas_sisi
         
         return {
-            "statusCode": 200,
-            "body": json.dumps(result)
+            'statusCode': 200,
+            'headers': {
+                'Access-Control-Allow-Origin': '*',
+                'Access-Control-Allow-Headers': 'Content-Type',
+                'Access-Control-Allow-Methods': 'GET,POST,OPTIONS'
+            },
+            'body': json.dumps({
+                'rusuk': rusuk,
+                'luas_sisi': luas_sisi,
+                'luas_permukaan': luas_permukaan,
+                'satuan': 'satuan persegi'
+            })
         }
-        
-    except ValueError as e:
+    except json.JSONDecodeError as e:
         return {
-            "statusCode": 400,
-            "body": f"Invalid input: {str(e)}"
+            'statusCode': 500,
+            'headers': {
+                'Access-Control-Allow-Origin': '*'
+            },
+            'body': json.dumps({
+                'error': 'Invalid JSON response from square function',
+                'details': str(e)
+            })
         }
     except Exception as e:
         return {
-            "statusCode": 500,
-            "body": f"Internal Error: {str(e)}"
+            'statusCode': 500,
+            'headers': {
+                'Access-Control-Allow-Origin': '*'
+            },
+            'body': json.dumps({'error': str(e)})
         }

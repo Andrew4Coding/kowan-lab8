@@ -1,4 +1,3 @@
-#!/usr/bin/env python3
 """
 FaaS function to calculate the surface area of a square.
 Formula: area = side * side
@@ -6,25 +5,10 @@ Formula: area = side * side
 
 import json
 
-def handle(event, context):
-    """
-    Handle the FaaS request to calculate square surface area.
-    
-    Expected input JSON:
-    {
-        "side": float
-    }
-    
-    Returns JSON:
-    {
-        "statusCode": int,
-        "body": str
-    }
-    """
+def lambda_handler(event, context):
     try:
-        req_data = json.loads(event.body.decode('utf8'))
+        req_data = json.loads(event['body'])
         
-        # Validate input
         if "side" not in req_data:
             return {
                 "statusCode": 400,
@@ -33,17 +17,14 @@ def handle(event, context):
         
         side = float(req_data["side"])
         
-        # Validate side length
         if side <= 0:
             return {
                 "statusCode": 400,
                 "body": "Side length must be positive"
             }
         
-        # Calculate surface area
         surface_area = side * side
         
-        # Return result
         result = {
             "surface_area": surface_area,
             "side": side,
